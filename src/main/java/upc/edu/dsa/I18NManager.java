@@ -2,7 +2,12 @@ package upc.edu.dsa;
 
 import org.apache.log4j.Logger;
 
+import java.util.HashMap;
+import java.util.ResourceBundle;
+
 public class I18NManager {
+
+    HashMap<String, ResourceBundle> datos;
 
     static final Logger logger = Logger.getLogger(I18NManager.class.getName());
     private static I18NManager manager;
@@ -15,39 +20,25 @@ public class I18NManager {
         return manager;
     }
 
-    private I18NManager() {}
+    private I18NManager() {
+        this.datos = new HashMap<String, ResourceBundle>();
+    }
 
-    public String getText(String p1, String p2) {
-        switch(p1) {
-            case "ca":
-                if(p2.equals("l1")) {
-                    return "hola";
-                }
-                else if(p2.equals("l2")) {
-                    return "adéu";
-                }
-                break;
-            case "es":
-                if (p2.equals("l2")) {
-                    return "adós";
-                }
-                break;
-            case "it":
-                if (p2.equals("l1")) {
-                    return "Chao";
-                }
-                break;
-            case "pt":
-                if(p2.equals("l2")) {
-                    return "obrigado";
-                }
-            default:
-                logger.info("Error en los datos");
+    public String getText(String language, String line) {
+        logger.info("Language: " + language + ", line: " + line);
+        ResourceBundle rb = this.datos.get(language);
+        if (rb == null) {
+            logger.warn("Bundle '" + language + ".properties' does not exist");
+            rb = ResourceBundle.getBundle(language);
+            this.datos.put(language, rb);
+            logger.info("Language bundle added");
         }
-        return null;
+        else
+            logger.info("Bundle already exists");
+        return rb.getString(line);
     }
 
     public void clear() {
-
+        this.datos.clear();
     }
 }
